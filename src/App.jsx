@@ -2,7 +2,6 @@ import { useState, useEffect, useRef } from "react";
 import "./App.css";
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:8000";
-console.log("HireMailer is using BACKEND_URL:", BACKEND_URL); // TEMP DEBUG — remove later
 const STEP_LABELS = ["Connect", "Upload", "Compose", "Dispatch"];
 
 function StepRail({ activeStep }) {
@@ -43,6 +42,7 @@ function App() {
   const [savingName, setSavingName] = useState(false);
   const [connectError, setConnectError] = useState("");
   const [companyLoading, setCompanyLoading] = useState(true);
+  const [fileInputKey, setFileInputKey] = useState(0);
 
   const [csvFile, setCsvFile] = useState(null);
   const [uploadResult, setUploadResult] = useState(null);
@@ -262,6 +262,7 @@ function App() {
   const handleStartNewBatch = () => {
     if (pollIntervalRef.current) clearInterval(pollIntervalRef.current);
     setCsvFile(null);
+    setFileInputKey((k) => k + 1); // forces the file input to remount fresh
     setUploadResult(null);
     setUploadError("");
     setBatchStatus(null);
@@ -362,7 +363,7 @@ function App() {
               <p className="ticket__hint">CSV or Excel — columns required: <code>name</code>, <code>role</code>, <code>email</code></p>
 
               <div className="file-row">
-                <input type="file" accept=".csv,.xlsx,.xls" onChange={handleFileChange} id="file-input" className="file-input" />
+                <input type="file" accept=".csv,.xlsx,.xls" onChange={handleFileChange} id="file-input" key={fileInputKey} className="file-input" />
                 <label htmlFor="file-input" className="file-input__label">
                   {csvFile ? csvFile.name : "Choose file"}
                 </label>
