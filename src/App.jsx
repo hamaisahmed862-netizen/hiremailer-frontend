@@ -1,7 +1,8 @@
 import { useState, useEffect, useRef } from "react";
 import "./App.css";
 
-const BACKEND_URL = "http://localhost:8000";
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:8000";
+console.log("HireMailer is using BACKEND_URL:", BACKEND_URL); // TEMP DEBUG — remove later
 const STEP_LABELS = ["Connect", "Upload", "Compose", "Dispatch"];
 
 function StepRail({ activeStep }) {
