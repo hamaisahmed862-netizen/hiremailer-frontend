@@ -1,16 +1,63 @@
-# React + Vite
+# HireMailer — Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+**Live demo:** [hiremailer-frontend.vercel.app](https://hiremailer-frontend.vercel.app/)
 
-Currently, two official plugins are available:
+HireMailer is a web app that lets a company send a single email template to a whole list of job applicants at once — with each recipient's **name** and **role** automatically swapped in — straight from the company's own connected Gmail account.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+This repository is the **frontend** (React + Vite). It talks to a separate FastAPI backend, which handles Google OAuth, storing applicants, and actually sending the emails through the Gmail API.
 
-## React Compiler
+## How it works
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+1. **Connect Gmail** — the company signs in with Google and grants permission to send email on their behalf (OAuth2).
+2. **Upload applicants** — a CSV or Excel file with `name`, `role`, and `email` columns. Duplicate rows and files that exceed Gmail's daily sending limit are flagged automatically.
+3. **Compose** — write one subject and body using `{{name}}` and `{{role}}` placeholders, with a live preview of exactly what the first applicant will receive.
+4. **Dispatch** — emails go out one at a time with a short delay between each, so nothing trips Gmail's spam or rate-limit protections. Progress updates live, and a batch can be stopped mid-send if needed.
 
-## Expanding the ESLint configuration
+## Tech stack
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+- **React** (Vite)
+- Plain CSS — a custom "mailroom / dispatch ledger" visual identity (no UI framework)
+- Talks to the backend over a REST API, authenticated with a signed session token issued after the Google OAuth flow
+
+## Local development
+
+```bash
+git clone https://github.com/hamaisahmed862-netizen/hiremailer-frontend.git
+cd hiremailer-frontend
+npm install
+npm run dev
+```
+
+The app expects a backend to be running and reachable — see the [backend repo](https://github.com/hamaisahmed862-netizen/hiremailer) for setup.
+
+### Environment variables
+
+Create a `.env` file in the project root (or set this in your deployment platform):
+
+| Variable | Description | Example |
+|---|---|---|
+| `VITE_BACKEND_URL` | Base URL of the running backend API | `http://localhost:8000` (local) or your deployed backend URL |
+
+If unset, it defaults to `http://localhost:8000` for local development.
+
+## Project structure
+
+```
+frontend/
+├── src/
+│   ├── App.jsx       # main app — all steps (connect, upload, compose, dispatch)
+│   ├── App.css       # visual styling
+│   ├── index.css     # global base styles
+│   ├── main.jsx      # React entry point
+│   └── assets/       # static images (hero image, default icons)
+├── index.html
+└── package.json
+```
+
+## Related repository
+
+- **Backend (FastAPI, Google OAuth, Gmail API, database):** [hiremailer](https://github.com/hamaisahmed862-netizen/hiremailer)
+
+## Status
+
+Actively developed as a personal/portfolio project.
